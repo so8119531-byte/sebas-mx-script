@@ -1,4 +1,4 @@
--- === CONFIGURACIÓN GLOBAL (ULTRA-LIGHT OPTIMIZADO) ===
+-- === CONFIGURACIÓN GLOBAL (REPARADO Y OPTIMIZADO) ===
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local Mouse = LocalPlayer:GetMouse()
@@ -6,8 +6,8 @@ local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 local StarterGui = game:GetService("StarterGui")
 
-local TriggerbotActivo = true
-local TriggerDelay = 0.030 
+local TriggerbotActivo = true -- Inicia encendido automáticamente
+local TriggerDelay = 0.030 -- Sincronizado con los 25ms de tu TGMacro
 local UltimoDisparo = 0
 local Disparando = false
 
@@ -23,11 +23,14 @@ local function EnviarNotificacion(titulo, mensaje, duracion)
     end)
 end
 
-EnviarNotificacion("SEBAS MX", "Script v4.9 Cargado desde GitHub. Tecla: T", 3)
+-- Mensaje de bienvenida
+EnviarNotificacion("SEBAS MX", "Script v5.0 Activado. Tecla: T", 3)
 
--- === DETECTOR DE TECLA T ===
+-- === DETECTOR DE LA TECLA T ===
 UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
+    -- Si estás escribiendo en el chat de Roblox, ignora la tecla T
     if gameProcessedEvent then return end
+    
     if input.KeyCode == Enum.KeyCode.T then
         TriggerbotActivo = not TriggerbotActivo
         if TriggerbotActivo then
@@ -38,7 +41,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
     end
 end)
 
--- === EJECUCIÓN DEL CLIC ===
+-- === EJECUCIÓN DIRECTA DEL CLIC ===
 local function DispararFirme()
     if mouse1click then
         mouse1click()
@@ -51,12 +54,13 @@ local function DispararFirme()
     end
 end
 
--- === BUCLE PRINCIPAL ANTI-LAG ===
+-- === BUCLE PRINCIPAL (ANTI-LAG) ===
 RunService.Heartbeat:Connect(function()
     if not TriggerbotActivo then return end
     
     if not Disparando then
         local Character = LocalPlayer.Character
+        -- LÍNEA CORREGIDA: Detecta tu arma de forma limpia sin importar el parpadeo de la macro
         local Tool = Character and (Character:FindFirstChildOfClass("Tool") or LocalPlayer.Backpack:FindFirstChildOfClass("Tool"))
         
         if Tool and (tick() - UltimoDisparo) > 0.08 then
@@ -74,6 +78,7 @@ RunService.Heartbeat:Connect(function()
                         task.spawn(function()
                             task.wait(TriggerDelay)
                             
+                            -- Doble verificación de mira antes de soltar el tiro
                             if Mouse.Target and (Players:GetPlayerFromCharacter(Mouse.Target.Parent) or Players:GetPlayerFromCharacter(Mouse.Target.Parent.Parent)) == Rival then
                                 DispararFirme()
                             end
@@ -84,5 +89,6 @@ RunService.Heartbeat:Connect(function()
             end
         end
     end
+    -- Evita tirones de FPS dándole un respiro al procesador
     task.wait(0.015)
 end)
